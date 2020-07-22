@@ -34,6 +34,9 @@ binary_tree_t *binary_trees_ancestor(const binary_tree_t *first,
 	const binary_tree_t *ft = first, *st = second;
 	int fd, sd;
 
+	if (!first || !second)
+		return (NULL);
+
 	fd = binary_tree_depth(ft);
 	sd = binary_tree_depth(st);
 
