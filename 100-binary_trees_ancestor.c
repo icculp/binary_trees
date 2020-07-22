@@ -51,6 +51,8 @@ binary_tree_t *binary_trees_ancestor(const binary_tree_t *first,
 	{
 		st = st->parent;
 		ft = ft->parent;
+		if (!st || !ft)
+			return (NULL);
 	}
 	return ((binary_tree_t *)ft);
 }
