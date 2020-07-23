@@ -18,24 +18,33 @@ int binary_tree_is_full(const binary_tree_t *tree)
 }
 
 /**
-* balance - function
-* @tree: ptr to root of tree to traverse through
-* @counter: variable to store traverseal steps
-* @max: variable to store recursive_height
-* Description: gets height of tree
-* Return: height of tree
+* binary_tree_height - measure height of binary tree
+* @tree: tree pointer
+* Return: height
 */
-int balance(const binary_tree_t *tree, int counter, int max)
+
+size_t binary_tree_height(const binary_tree_t *tree)
 {
-	if (tree->left != NULL)
-		max = balance(tree->left, counter + 1, max);
+	int left, right;
 
-	if (tree->right != NULL)
-		max = balance(tree->right, counter + 1, max);
-
-	if (max < counter)
-		max = counter;
-	return (max);
+	if (tree == NULL)
+		return (0);
+	left = binary_tree_height(tree->left);
+	right = binary_tree_height(tree->right);
+	if (left > right)
+	{
+		if (tree->left == NULL && tree->right == NULL)
+			return (left);
+		else
+			return (left + 1);
+	}
+	else
+	{
+		if (tree->left == NULL && tree->right == NULL)
+			return (right);
+		else
+			return (right + 1);
+	}
 }
 
 /**
@@ -53,10 +62,10 @@ int binary_tree_is_perfect(const binary_tree_t *tree)
 
 
 	if (tree->left != NULL)
-		counterL = balance(tree->left, 1, 1);
+		counterL = binary_tree_height(tree->left);
 
 	if (tree->right != NULL)
-		counterR = balance(tree->right, 1, 1);
+		counterR = binary_tree_height(tree->right);
 
 	if (counterL - counterR == 0 && binary_tree_is_full(tree))
 		return (1);
