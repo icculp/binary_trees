@@ -1,74 +1,59 @@
 #include "binary_trees.h"
 
 /**
-* binary_tree_is_full - check if tree is full
-* @tree: tree pointer
-* Return: 1 or 0
-*/
-
-int binary_tree_is_full(const binary_tree_t *tree)
-{
-	if (tree == NULL)
-		return (0);
-	if (!tree->left && !tree->right)
-		return (1);
-	if (tree->left && tree->right)
-		return (binary_tree_is_full(tree->left) && binary_tree_is_full(tree->right));
-	return (0);
-}
-
-/**
-* binary_tree_height - measure height of binary tree
+* bdepth - measure depth of left branch
 * @tree: tree pointer
 * Return: height
 */
 
-size_t binary_tree_height(const binary_tree_t *tree)
+int bdepth(const binary_tree_t *tree)
 {
-	int left, right;
+	int d = 0;
 
-	if (tree == NULL)
-		return (0);
-	left = binary_tree_height(tree->left);
-	right = binary_tree_height(tree->right);
-	if (left > right)
+	while (tree)
 	{
-		if (tree->left == NULL && tree->right == NULL)
-			return (left);
-		else
-			return (left + 1);
+		d++;
+		tree = tree->left;
 	}
-	else
-	{
-		if (tree->left == NULL && tree->right == NULL)
-			return (right);
-		else
-			return (right + 1);
-	}
+	return (d);
 }
 
 /**
-* binary_tree_is_perfect - function
-* @tree: tree to check
-* Description: check if a binary tree is balanced and full
-* Return: 1 if perfect, 0 otherwise
+* perfect_recursion - recursive algorithm for checking if btree is perfect
+* @tree: tree pointer
+* @d: depth of left branch
+* @level: level of tree
+* Return: 1 or 0
 */
+
+int perfect_recursion(const binary_tree_t *tree, int d, int level)
+{
+	if (tree == NULL)
+		return (true);
+	if (tree->left == NULL && tree->right == NULL)
+	{
+		return (d == (level + 1));
+	}
+	if (tree->left == NULL || tree->right == NULL)
+		return (false);
+	return (perfect_recursion(tree->left, d, level + 1) &&
+		perfect_recursion(tree->right, d, level + 1));
+}
+
+/**
+* binary_tree_is_perfect - check if tree is perfect
+* @tree: tree pointer
+* Return: 1 or 0
+*/
+
 int binary_tree_is_perfect(const binary_tree_t *tree)
 {
-	int counterL = 0, counterR = 0;
+	int d;
 
 	if (tree == NULL)
 		return (0);
-
-
-	if (tree->left != NULL)
-		counterL = binary_tree_height(tree->left);
-
-	if (tree->right != NULL)
-		counterR = binary_tree_height(tree->right);
-
-	if (counterL - counterR == 0 && binary_tree_is_full(tree))
+	d = bdepth(tree);
+	if (perfect_recursion(tree, d, 0))
 		return (1);
-	else
-		return (0);
+	return (0);
 }
