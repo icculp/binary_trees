@@ -52,7 +52,7 @@ bst_t *bst_insert(bst_t **tree, int value)
 }
 
 /**
-* avl_insert - inserts into avl without losing balance
+* avli - avl insert recursion
 * @tree: tree to insert into
 * @value: value to insert
 * Return: pointer to new node or NULL
@@ -62,71 +62,46 @@ avl_t *avli(avl_t *tree, int value)
 {
 	int bal = 0;
 
-	printf("65\n");
-	printf("66 tree: %d\n", tree->n);
 	if (value < tree->n)
 	{
-		printf("68\n");
 		if (tree->left)
 			tree = avli(tree->left, value);
 		else
-			tree->left = binary_tree_node(tree, value);
+			tree->left = binary_tree_node(tree, value), tree = tree->left;
 	}
 	else if (value > tree->n)
 	{
-		printf("73\n");
 		if (tree->right)
 			tree = avli(tree->right, value);
 		else
-		{
-			printf("82\n");
-			tree->right = binary_tree_node(tree, value);
-		}
-
-		printf("75");
+			tree->right = binary_tree_node(tree, value), tree = tree->right;
 	}
 	else
-	{
-		printf("78\n");
 		return (tree);
-	}
-	printf("72\n");
-	if (tree)
-	{
-
+	if (tree->parent && tree->parent->parent)
+		bal = binary_tree_balance(tree->parent->parent);
+	else if (tree->parent)
+		bal = binary_tree_balance(tree->parent);
+	else
 		bal = binary_tree_balance(tree);
+	if (bal > 1 && tree->parent && tree->parent->left &&
+		value < tree->parent->left->n)
+		return (binary_tree_rotate_right(tree));
+	if (bal < -1 && tree->parent && tree->parent->right &&
+		value > tree->parent->right->n)
+		return (binary_tree_rotate_left(tree));
+	if (bal > 1 && tree->parent && tree->parent->parent &&
+		value == tree->parent->right->n)
+	{/** && tree->parent->n == tree->parent->parent->left->n)*/
+		tree = binary_tree_rotate_left(tree->parent);
+		return (binary_tree_rotate_right(tree->parent));
 	}
-
-	printf("Balance: %d\n", bal);
-	printf("1\n");
-	if (bal > 0 && value > tree->left->n)
-	{
-		printf("first\n");
-		return binary_tree_rotate_right(tree);
-	}
-	printf("wtf\n");
-	if (bal < 0 && value < tree->right->n)
-	{
-		printf("second\n");
-		return binary_tree_rotate_left(tree);
-	}
-	printf("2");
-	if (bal > 0 && value > tree->left->n)
-	{
-		printf("third\n");
-		tree->left = binary_tree_rotate_left(tree->left);
-		return binary_tree_rotate_right(tree);
-	}
-	if (bal < 0 && value > tree->right->n)
-	{
-		printf("fourth\n");
-		tree->right = binary_tree_rotate_right(tree->right);
-		return binary_tree_rotate_left(tree);
-	}
-	printf("3");
+	if (bal < -1 && tree->parent && tree->parent->parent &&
+		value == tree->parent->right->n)
+		binary_tree_rotate_left(tree->parent->parent);
 	return (tree);
-}
-
+} /**return binary_tree_rotate_left(tree);*/
+/** && value < tree->parent->right->n)*/
 
 /**
 * avl_insert - inserts into avl without losing balance
@@ -137,49 +112,14 @@ avl_t *avli(avl_t *tree, int value)
 
 avl_t *avl_insert(avl_t **tree, int value)
 {
-
-
-	printf("start");
 	if (tree == NULL)
 	{
-		printf("d");
 		return (NULL);
 	}
 	if (*tree == NULL)
 	{
-		printf("e");
 		*tree = binary_tree_node(NULL, value);
-		printf("ef");
 		return ((avl_t *)*tree);
 	}
-	printf("1f");
-	printf("why you ignore me?\n");
-	printf("130 tree: %d\n", (*tree)->n);
-	avli((avl_t *)*tree, value);
-/**	bal = binary_tree_balance(*tree);
-	if (bal > 0 && value < (*tree)->left->n)
-	{
-		printf("first\n");
-		return binary_tree_rotate_right(*tree);
-	}
-	if (bal < 0 && value > (*tree)->right->n)
-	{
-		printf("second\n");
-		return binary_tree_rotate_left(*tree);
-	}
-	printf("2");
-	if (bal > 0 && value > (*tree)->left->n)
-	{
-		printf("third\n");
-		(*tree)->left = binary_tree_rotate_left((*tree)->left);
-		return binary_tree_rotate_right(*tree);
-	}
-	if (bal < 0 && value < (*tree)->right->n)
-	{
-		printf("fourth\n");
-		(*tree)->right = binary_tree_rotate_right((*tree)->right);
-		return binary_tree_rotate_left(*tree);
-	}*/
-
-	return (*tree);
+	return (avli((avl_t *)*tree, value));
 }
